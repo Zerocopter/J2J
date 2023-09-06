@@ -1,7 +1,7 @@
 # J2J
 Small utility to convert certain Java serialized objects into JSON
 
-Usuage: J2J.py <filename>
+Usuage: J2J.py \<filename\>
 
 SBOM
 --------------------------------------
