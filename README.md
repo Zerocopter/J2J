@@ -1,7 +1,18 @@
 # J2J
 Small utility to convert certain Java serialized objects into JSON
 
-Usuage: J2J.py \<filename\>
+Usuage:
+
+Show help:
+ J2J.py --help
+
+Deserialize Java object:
+ J2J.py -i \<inputfile\> \[-o \<outputfile\>\]
+
+Check if file is a serialized Java object, or search directory for Java objects:
+ J2J.py -s \<FileOrDirectory\>
+
+
 
 SBOM
 --------------------------------------
