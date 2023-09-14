@@ -1,9 +1,12 @@
 #!/usr/bin/python3
 
 import sys
+import getopt
 import io
 import json
 import javaobj
+import os
+from os.path import exists
 from javaobj import JavaObjectUnmarshaller
 
 def seek_size(f):
@@ -13,9 +16,12 @@ def seek_size(f):
     f.seek(pos)
     return size
 
+def show_help():
+    print ("J2J.py -i <inputfile> [-o <outputfile>]")
+    print ("J2J.py -s <FileOrDirectory>")
 
-def main():
-    with open(sys.argv[1], "rb") as fin:
+def deserialize(inputFile,outputFile):
+    with open(inputFile, "rb") as fin:
         i = 0
         t = None
         
@@ -35,8 +41,8 @@ def main():
                     value = marshaller.readObject(ignore_remaining_data=True)
                     properties[key] = value
                 
-                if len(sys.argv) > 2:
-                    with open(sys.argv[2], 'w') as f:
+                if outputFile != "":
+                    with open(outputFile, 'w') as f:
                         json.dump(properties, f)
                 else:
                     print(json.dumps(properties, indent=4))
@@ -47,8 +53,8 @@ def main():
                     if str.startswith("[") and str.endswith("]"):
                         continue;
                     items.append(str)
-                if len(sys.argv) > 2:
-                    with open(sys.argv[2], 'w') as f:
+                if outputFile != "":
+                    with open(outputFile, 'w') as f:
                         json.dump(items, f)
                 else:
                     print(json.dumps(items, indent=4))
@@ -56,11 +62,39 @@ def main():
         except Exception:
             raise
 
-        
-            
-
         if fin.tell() != fileSize:
             print("error!")
 
+def scan(fileOrFolder):
+    print(fileOrFolder)
+    # TODO: Implement scanner
+    
+def main(argv):
+    inputFile = ""
+    outputFile = ""
+    scanTarget = ""
+    opts, args = getopt.getopt(argv,"hi:o:s:",["help","input=","output=","scan="])
+    for opt, arg in opts:
+      if opt in ("-h", "--help"):
+         show_help()
+         sys.exit()
+      elif opt in ("-i", "--input"):
+         inputFile = arg
+      elif opt in ("-o", "--output"):
+         outputFile = arg
+      elif opt in ("-s", "--scan"):
+         scanTarget = arg
+    
+    if scanTarget != "" and exists(scanTarget):
+        scan(scanTarget)
+        sys.exit()
+    
+    if inputFile != "" and exists(inputFile):
+        deserialize(inputFile, outputFile)
+        sys.exit()
+    else:
+        print ("Input file not found!")
+        sys.exit(1)
+
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))
